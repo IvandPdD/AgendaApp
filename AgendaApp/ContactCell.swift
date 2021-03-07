@@ -8,32 +8,53 @@
 
 import Foundation
 import UIKit
- 
-class ContactCell: UITableViewCell {
- 
-    @IBOutlet weak var imageCell: UIImageView!
-    @IBOutlet weak var labelCell: UILabel!
- 
-    override func awakeFromNib() {
-    super.awakeFromNib()
+import MaterialComponents
 
+class ContactCell: MDCCardCollectionCell {
+ 
+    @IBOutlet weak var photo: UIImageView!
+    @IBOutlet weak var name: UITextField!
+    @IBOutlet weak var phoneNumber: UITextField!
+    @IBOutlet weak var editContact: MDCButton!
+    @IBOutlet weak var deleteContact: MDCButton!
+    
+    var editButtonAction : (() -> ())?
+    var deleteButtonAction : (() -> ())?
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+
+        self.setBorderColor(.gray, for: .normal)
+        self.setBorderWidth(0.5, for: .normal)
+        self.setShadowColor(.gray, for: .normal)
+        self.setShadowColor(.gray, for: .normal)
+        self.setShadowElevation(ShadowElevation(rawValue: 2), for: .normal)
+        self.layer.masksToBounds = false
+        
+        self.editContact.addTarget(self, action: #selector(editButtonTapped(_:)), for: .touchUpInside)
+        self.deleteContact.addTarget(self, action: #selector(deleteButtonTapped(_:)), for: .touchUpInside)
+        
         // SHADOW AND BORDER FOR CELL
-        //yourTableViewCell.contentView.layer.cornerRadius = 5
+        /*self.contentView.layer.cornerRadius = 5
         self.contentView.layer.borderWidth = 0.5
         self.contentView.layer.borderColor = UIColor.lightGray.cgColor
-        self.contentView.layer.masksToBounds = true
         self.layer.shadowColor = UIColor.gray.cgColor
-        self.layer.shadowOffset = CGSize(width: 0, height: 2.0)
-        self.layer.shadowRadius = 2.0
+        self.layer.shadowOffset = CGSize(width: 1.0, height: 1.0)
+        self.layer.shadowRadius = 1.0
         self.layer.shadowOpacity = 1.0
         self.layer.masksToBounds = false
-        self.layer.shadowPath = UIBezierPath(roundedRect:self.bounds, cornerRadius:self.contentView.layer.cornerRadius).cgPath
+        self.layer.shadowPath = UIBezierPath(roundedRect:self.bounds, cornerRadius:self.contentView.layer.cornerRadius).cgPath*/
    }
- 
-    override func setSelected(_ selected: Bool, animated: Bool) {
-       super.setSelected(selected, animated: animated)
- 
-       // Configure the view for the selected state
-    }
+    
+    @IBAction func editButtonTapped(_ sender: UIButton){
+       // if the closure is defined (not nil)
+       // then execute the code inside the subscribeButtonAction closure
+       editButtonAction?()
+     }
+    @IBAction func deleteButtonTapped(_ sender: UIButton){
+       // if the closure is defined (not nil)
+       // then execute the code inside the subscribeButtonAction closure
+       editButtonAction?()
+     }
 }
 

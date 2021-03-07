@@ -3,12 +3,13 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		2F0D1C3425F2928700FB8114 /* MainVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F0D1C3325F2928700FB8114 /* MainVC.swift */; };
 		2F0D1C4525F2D63700FB8114 /* ContactCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F0D1C4425F2D63700FB8114 /* ContactCell.swift */; };
+		2F1D4BF725F3DB4E0025D7BC /* KeyboardLayoutGuide in Frameworks */ = {isa = PBXBuildFile; productRef = 2F1D4BF625F3DB4E0025D7BC /* KeyboardLayoutGuide */; };
 		33B2805825F1577A00092230 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B2805725F1577A00092230 /* AppDelegate.swift */; };
 		33B2805A25F1577A00092230 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B2805925F1577A00092230 /* SceneDelegate.swift */; };
 		33B2805F25F1577A00092230 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 33B2805D25F1577A00092230 /* Main.storyboard */; };
@@ -39,6 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2F1D4BF725F3DB4E0025D7BC /* KeyboardLayoutGuide in Frameworks */,
 				CC0E29718AE5EF81E50EB392 /* Pods_AgendaApp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -115,6 +117,9 @@
 			dependencies = (
 			);
 			name = AgendaApp;
+			packageProductDependencies = (
+				2F1D4BF625F3DB4E0025D7BC /* KeyboardLayoutGuide */,
+			);
 			productName = AgendaApp;
 			productReference = 33B2805425F1577A00092230 /* AgendaApp.app */;
 			productType = "com.apple.product-type.application";
@@ -143,6 +148,9 @@
 				Base,
 			);
 			mainGroup = 33B2804B25F1577A00092230;
+			packageReferences = (
+				2F1D4BF525F3DB4E0025D7BC /* XCRemoteSwiftPackageReference "KeyboardLayoutGuide" */,
+			);
 			productRefGroup = 33B2805525F1577A00092230 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -414,6 +422,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		2F1D4BF525F3DB4E0025D7BC /* XCRemoteSwiftPackageReference "KeyboardLayoutGuide" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/freshOS/KeyboardLayoutGuide";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.7.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2F1D4BF625F3DB4E0025D7BC /* KeyboardLayoutGuide */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2F1D4BF525F3DB4E0025D7BC /* XCRemoteSwiftPackageReference "KeyboardLayoutGuide" */;
+			productName = KeyboardLayoutGuide;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 33B2804C25F1577A00092230 /* Project object */;
 }
