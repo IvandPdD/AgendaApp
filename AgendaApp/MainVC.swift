@@ -22,15 +22,12 @@ class MainVC: UIViewController{
     var preSection:Int?
     var expand:Bool = false
     
-    var addContact: UIViewController?
+    var addContactVC: AddContactVC?
     var addButton: MDCFloatingButton?
-    
-    @IBOutlet weak var addName: UITextField!
-    @IBOutlet weak var addNumber: UITextField!
     
     var contactName: [String] = ["jsahfue", "ksjdfliweas", "skdhfjwe", "jaskdfje", "kasjdfewj", "dafkhsjeiujfa", "kdsajfei", "sdhjfsidfjhe", "sdkjfeo"]
     var contactNumber: [String] = ["123 12 12 12", "567 56 56 56", "789 45 34 23", "465 23 75 23", "978 23 67 34", "456 86 45 83", "236 75 73 86", "234 64 72 83", "236 84 83 56"]
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -49,10 +46,11 @@ class MainVC: UIViewController{
     @objc func addContact(sender: MDCFloatingButton) {
         
         let transitionDelegate = SPStorkTransitioningDelegate()
-        self.addContact = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "addContact")
-        self.addContact?.transitioningDelegate = transitionDelegate
-        self.addContact?.modalPresentationStyle = .custom
-        self.addContact!.modalPresentationCapturesStatusBarAppearance = true
+        self.addContactVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "addContact") as! AddContactVC
+        self.addContactVC!.master = self
+        self.addContactVC?.transitioningDelegate = transitionDelegate
+        self.addContactVC?.modalPresentationStyle = .custom
+        self.addContactVC!.modalPresentationCapturesStatusBarAppearance = true
 
         transitionDelegate.customHeight = 500
         transitionDelegate.indicatorMode = .alwaysLine
@@ -60,16 +58,16 @@ class MainVC: UIViewController{
         transitionDelegate.translateForDismiss = 10
         transitionDelegate.tapAroundToDismissEnabled = false
         
-        present(self.addContact!, animated: true, completion: nil)
+        present(self.addContactVC!, animated: true, completion: nil)
     }
     
     @IBAction func confirmAddContact(_ sender: MDCButton) {
         
-        //Peticion al NetworkManager para crear contacto si pudiese hacer peticiones a la API
-        self.contactName.append(self.addName.text!)
-        self.contactNumber.append(self.addNumber.text!)
-        self.dismiss(animated: true, completion: nil)
-        self.collectionView.reloadData()
+//        //Peticion al NetworkManager para crear contacto si pudiese hacer peticiones a la API
+//        self.contactName.append(self.addName.text!)
+//        self.contactNumber.append(self.addNumber.text!)
+//        self.dismiss(animated: true, completion: nil)
+//        self.collectionView.reloadData()
     }
     
 }

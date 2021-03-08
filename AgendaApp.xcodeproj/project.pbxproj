@@ -13,6 +13,7 @@
 		2F7F850325F491FD00472875 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F7F850225F491FD00472875 /* NetworkManager.swift */; };
 		2F7F850625F4928400472875 /* Contact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F7F850525F4928400472875 /* Contact.swift */; };
 		2F82B44D25F56A770089C367 /* AddContactVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F82B44C25F56A770089C367 /* AddContactVC.swift */; };
+		333B729225F6B43000CAA3EB /* ChangePasswordVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 333B729125F6B43000CAA3EB /* ChangePasswordVC.swift */; };
 		33B2805825F1577A00092230 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B2805725F1577A00092230 /* AppDelegate.swift */; };
 		33B2805A25F1577A00092230 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B2805925F1577A00092230 /* SceneDelegate.swift */; };
 		33B2805F25F1577A00092230 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 33B2805D25F1577A00092230 /* Main.storyboard */; };
@@ -29,6 +30,7 @@
 		2F7F850225F491FD00472875 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		2F7F850525F4928400472875 /* Contact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Contact.swift; sourceTree = "<group>"; };
 		2F82B44C25F56A770089C367 /* AddContactVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddContactVC.swift; sourceTree = "<group>"; };
+		333B729125F6B43000CAA3EB /* ChangePasswordVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePasswordVC.swift; sourceTree = "<group>"; };
 		33B2805425F1577A00092230 /* AgendaApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AgendaApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		33B2805725F1577A00092230 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		33B2805925F1577A00092230 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -83,6 +85,7 @@
 				2F7F850225F491FD00472875 /* NetworkManager.swift */,
 				2F0D1C3325F2928700FB8114 /* MainVC.swift */,
 				2F82B44C25F56A770089C367 /* AddContactVC.swift */,
+				333B729125F6B43000CAA3EB /* ChangePasswordVC.swift */,
 				33B2805D25F1577A00092230 /* Main.storyboard */,
 				33B2806025F1577B00092230 /* Assets.xcassets */,
 				33B2806225F1577B00092230 /* LaunchScreen.storyboard */,
@@ -237,6 +240,7 @@
 				33B2805A25F1577A00092230 /* SceneDelegate.swift in Sources */,
 				33B2806C25F15AD400092230 /* LoginRegisterVC.swift in Sources */,
 				2F7F850625F4928400472875 /* Contact.swift in Sources */,
+				333B729225F6B43000CAA3EB /* ChangePasswordVC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -383,6 +387,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = AgendaApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.7;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -401,6 +406,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = AgendaApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.7;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
