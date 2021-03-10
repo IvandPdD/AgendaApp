@@ -21,11 +21,11 @@ class AddContactVC: UIViewController{
         
         master!.contactName.append(addName.text!)
         master!.contactNumber.append(addNumber.text!)
-//        contactName.append(self.addName.text!)
-//        contactNumber.append(self.addNumber.text!)
+        
+        //NetworkManager.shared.createContact(contact: <#T##Contact#>)
+        
         self.dismiss(animated: true, completion: {
             self.master?.collectionView.reloadData()
         })
-//        self.collectionView.reloadData()
     }
 }

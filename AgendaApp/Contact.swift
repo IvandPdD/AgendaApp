@@ -8,7 +8,21 @@
 
 import Foundation
 
-class Contact: Codable{
-    let name: String
-    let phoneNumber: String
+
+struct User: Codable {
+    
+    var user: String
+    var pass: String
+    var contacts: Contacts
+    
 }
+
+typealias Contacts = [Contact]
+
+struct Contact: Codable{
+
+    var name: String
+    var phoneNumber: String
+    
+}
+

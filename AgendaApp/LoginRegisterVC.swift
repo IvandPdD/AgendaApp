@@ -8,8 +8,15 @@
 
 import Foundation
 import UIKit
+import MaterialComponents
 
 class LoginRegisterVC: UIViewController{
+    
+    @IBOutlet weak var userLogin: MDCTextField!
+    @IBOutlet weak var passLogin: MDCTextField!
+    @IBOutlet weak var userRegister: MDCTextField!
+    @IBOutlet weak var passRegister: MDCTextField!
+    @IBOutlet weak var confirmPassRegister: MDCTextField!
     
     
     override func viewDidLoad() {
@@ -17,6 +24,19 @@ class LoginRegisterVC: UIViewController{
         self.hideKeyboardWhenTappedAround()
     }
     
+    @IBAction func login(_ sender: MDCRaisedButton) {
+        if(userLogin.hasTextContent && passLogin.hasTextContent){
+            NetworkManager.shared.getUser(user: userLogin.text!, pass: passLogin.text!)
+            self.performSegue(withIdentifier: "LoginSegue", sender: Any?.self)
+        }
+    }
+    
+    @IBAction func register(_ sender: MDCRaisedButton) {
+        if(userRegister.hasTextContent && passRegister.hasTextContent && confirmPassRegister.hasTextContent && passRegister.text == confirmPassRegister.text){
+            NetworkManager.shared.createUser(user: userRegister.text!, pass: passRegister.text!)
+            self.performSegue(withIdentifier: "RegisterSegue", sender: Any?.self)
+        }
+    }
 }
 
 extension UIViewController {

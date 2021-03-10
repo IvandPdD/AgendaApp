@@ -47,13 +47,9 @@ class ContactCell: MDCCardCollectionCell {
    }
     
     @IBAction func editButtonTapped(_ sender: UIButton){
-       // if the closure is defined (not nil)
-       // then execute the code inside the subscribeButtonAction closure
        editButtonAction?()
      }
     @IBAction func deleteButtonTapped(_ sender: UIButton){
-       // if the closure is defined (not nil)
-       // then execute the code inside the subscribeButtonAction closure
        deleteButtonAction?()
      }
 }
