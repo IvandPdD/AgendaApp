@@ -27,9 +27,6 @@ class MainVC: UIViewController{
     var addContactVC: AddContactVC?
     var addButton: MDCFloatingButton?
     
-    var contactName: [String] = ["jsahfue", "ksjdfliweas", "skdhfjwe", "jaskdfje", "kasjdfewj", "dafkhsjeiujfa", "kdsajfei", "sdhjfsidfjhe", "sdkjfeo"]
-    var contactNumber: [String] = ["123 12 12 12", "567 56 56 56", "789 45 34 23", "465 23 75 23", "978 23 67 34", "456 86 45 83", "236 75 73 86", "234 64 72 83", "236 84 83 56"]
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -126,8 +123,6 @@ extension MainVC: UICollectionViewDataSource, UICollectionViewDelegate,UICollect
             currentCell.deleteContact.isHidden.toggle()
             currentCell.editContact.setImage(UIImage(systemName: "pencil"), for: .normal)
             currentCell.setShadowElevation(ShadowElevation(rawValue: 2), for: .normal)
-            self.contactName.remove(at: indexPath.row)
-            self.contactNumber.remove(at: indexPath.row)
             self.editable = false
             self.collectionView.reloadData()
         }
@@ -136,6 +131,7 @@ extension MainVC: UICollectionViewDataSource, UICollectionViewDelegate,UICollect
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
         if (self.section != nil) {
             self.preSection = self.section
         }

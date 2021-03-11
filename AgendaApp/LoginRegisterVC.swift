@@ -38,14 +38,6 @@ class LoginRegisterVC: UIViewController{
             }
 //            NetworkManager.shared.getUser(user: userLogin.text!, pass: passLogin.text!)
 //            self.performSegue(withIdentifier: "LoginToMain", sender: Any?.self)
-        }else{
-            var dialogMessage = UIAlertController(title: "Alert", message: "Empty Fields", preferredStyle: .actionSheet)
-            dialogMessage.isSpringLoaded = true
-            
-            let ok = UIAlertAction(title: "OK", style: .default)
-            dialogMessage.addAction(ok)
-            
-            self.present(dialogMessage, animated: true, completion: nil)
         }
     }
     
@@ -60,14 +52,6 @@ class LoginRegisterVC: UIViewController{
             
 //            NetworkManager.shared.createUser(user: userRegister.text!, pass: passRegister.text!)
 //            self.performSegue(withIdentifier: "RegisterToLogin", sender: Any?.self)
-        }else{
-            var dialogMessage = UIAlertController(title: "Alert", message: "Empty Fields", preferredStyle: .actionSheet)
-            dialogMessage.isSpringLoaded = true
-            
-            let ok = UIAlertAction(title: "OK", style: .default)
-            dialogMessage.addAction(ok)
-            
-            self.present(dialogMessage, animated: true, completion: nil)
         }
     }
 }
