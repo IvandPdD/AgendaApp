@@ -9,4 +9,5 @@ target 'AgendaApp' do
   pod 'SPStorkController'
   pod 'MaterialComponents'
   pod 'Alamofire'
+  pod 'Toaster'
 end

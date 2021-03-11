@@ -14,6 +14,8 @@ import KeyboardLayoutGuide
 
 class MainVC: UIViewController{
     
+    var user: User?
+    
     @IBOutlet var collectionView: UICollectionView!
     
     var editable: Bool = false
@@ -42,6 +44,12 @@ class MainVC: UIViewController{
         
         self.addButton?.addTarget(self, action: #selector(self.addContact(sender:)), for: .touchUpInside)
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        if(NetworkManager.shared.checkUser()){
+            self.user = NetworkManager.shared.getUser()
+        }
+    }
 
     @objc func addContact(sender: MDCFloatingButton) {
         
@@ -61,22 +69,13 @@ class MainVC: UIViewController{
         present(self.addContactVC!, animated: true, completion: nil)
     }
     
-    @IBAction func confirmAddContact(_ sender: MDCButton) {
-        
-//        //Peticion al NetworkManager para crear contacto si pudiese hacer peticiones a la API
-//        self.contactName.append(self.addName.text!)
-//        self.contactNumber.append(self.addNumber.text!)
-//        self.dismiss(animated: true, completion: nil)
-//        self.collectionView.reloadData()
-    }
-    
 }
 
 
 extension MainVC: UICollectionViewDataSource, UICollectionViewDelegate,UICollectionViewDelegateFlowLayout{
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.contactName.count
+        return UserData.shared.currentUser.contacts.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -84,35 +83,42 @@ extension MainVC: UICollectionViewDataSource, UICollectionViewDelegate,UICollect
                                                             for: indexPath) as! ContactCell
         cell.photo.image = UIImage(systemName: "person.circle.fill")
         cell.photo.tintColor = .systemTeal
-        cell.name.text = self.contactName[indexPath.row]
-        cell.phoneNumber.text = self.contactNumber[indexPath.row]
+        cell.name.text = UserData.shared.currentUser.contacts[indexPath.row].name
+        cell.phoneNumber.text = UserData.shared.currentUser.contacts[indexPath.row].phoneNumber
         cell.editContact.setImage(UIImage(systemName: "pencil"), for: .normal)
         cell.editContact.backgroundColor = .white
         cell.editContact.enableRippleBehavior = true
         cell.deleteContact.enableRippleBehavior = true
         
         cell.editButtonAction = {
-            //Peticion al NetworkManager para borrar contacto si pudiese hacer peticiones a la API
             let currentCell = collectionView.cellForItem(at: indexPath) as! ContactCell
+            
             self.editable.toggle()
             currentCell.name.isEnabled.toggle()
             currentCell.name.isHighlighted.toggle()
             currentCell.phoneNumber.isEnabled.toggle()
             currentCell.deleteContact.isHidden.toggle()
+            
             if (self.editable) {
                 currentCell.editContact.setImage(UIImage(systemName: "checkmark.circle.fill"), for: .normal)
                 currentCell.setShadowElevation(ShadowElevation(rawValue: 8), for: .normal)  
                 
             }else{
-                self.contactName[indexPath.row] = currentCell.name.text!
-                self.contactNumber[indexPath.row] = currentCell.phoneNumber.text!
+                //NetworkManager.shared.modifyContact(contactAt: indexPath.row, contact: <#T##Contact#>)
+                UserData.shared.currentUser.contacts[indexPath.row].name = currentCell.name.text!
+                UserData.shared.currentUser.contacts[indexPath.row].phoneNumber = currentCell.phoneNumber.text!
+                NetworkManager.shared.saveUser(user: UserData.shared.currentUser.user, pass: UserData.shared.currentUser.pass, contacts: UserData.shared.currentUser.contacts)
+                
                 currentCell.editContact.setImage(UIImage(systemName: "pencil"), for: .normal)
                 currentCell.setShadowElevation(ShadowElevation(rawValue: 2), for: .normal)
             }
         }
             
         cell.deleteButtonAction = {
-            //Peticion al NetworkManager para borrar contacto si pudiese hacer peticiones a la API
+            //NetworkManager.shared.deleteContact(contactAt: indexPath.row)
+            UserData.shared.currentUser.contacts.remove(at: indexPath.row)
+            NetworkManager.shared.saveUser(user: UserData.shared.currentUser.user, pass: UserData.shared.currentUser.pass, contacts: UserData.shared.currentUser.contacts)
+            
             let currentCell = collectionView.cellForItem(at: indexPath) as! ContactCell
             self.editable.toggle()
             currentCell.name.isEnabled.toggle()

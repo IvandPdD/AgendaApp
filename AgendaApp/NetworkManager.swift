@@ -11,6 +11,7 @@ import Alamofire
 class NetworkManager{
     
     static var shared: NetworkManager = NetworkManager()
+    let defaults = UserDefaults.standard
     
     let url = URL(string: "Some API URL")
     let apiKey = "API Key"
@@ -60,7 +61,7 @@ class NetworkManager{
         var queryParameters = [
             "contact": contact]
         
-        var headers: HTTPHeaders = ["Autorization": self.apiKey]
+        var headers: HTTPHeaders = ["Authorization": self.apiKey]
         
         AF.request(self.url as! URLConvertible, method: .post, parameters: queryParameters, encoding: URLEncoding(destination: .queryString), headers: headers ).responseDecodable(of: User.self){
             response in
@@ -69,13 +70,13 @@ class NetworkManager{
         
     }
     
-    func modifyContact(contactId: Int, contact: Contact){
+    func modifyContact(contactAt: Int, contact: Contact){
         
         var queryParameters = [
-            "contact_id": contactId,
+            "contact_id": contactAt,
             "contact": contact] as [String : Any]
         
-        var headers: HTTPHeaders = ["Autorization": self.apiKey]
+        var headers: HTTPHeaders = ["Authorization": self.apiKey]
         
         AF.request(self.url as! URLConvertible, method: .post, parameters: queryParameters, encoding: URLEncoding(destination: .queryString), headers: headers ).responseDecodable(of: User.self){
             response in
@@ -83,12 +84,12 @@ class NetworkManager{
         }
     }
     
-    func deleteContact(contactId: Int){
+    func deleteContact(contactAt: Int){
         
         var queryParameters = [
-            "contact_id": contactId]
+            "contact_id": contactAt]
         
-        var headers: HTTPHeaders = ["Autorization": self.apiKey]
+        var headers: HTTPHeaders = ["Authorization": self.apiKey]
         
         AF.request(self.url as! URLConvertible, method: .post, parameters: queryParameters, encoding: URLEncoding(destination: .queryString), headers: headers ).responseDecodable(of: User.self){
             response in
@@ -101,12 +102,41 @@ class NetworkManager{
         var queryParameters = [
             "id": id]
         
-        var headers: HTTPHeaders = ["Autorization": self.apiKey]
+        var headers: HTTPHeaders = ["Authorization": self.apiKey]
         
         AF.request(self.url as! URLConvertible, method: .post, parameters: queryParameters, encoding: URLEncoding(destination: .queryString), headers: headers ).responseDecodable(of: String.self){
             response in
             
         }
     }
+    
+    /// -DEFAULTS
+    func saveUser (user: String, pass: String, contacts: [Contact]){
+            let user = User(user: user, pass: pass, contacts: contacts)
+
+            let encodedUser = try? JSONEncoder().encode(user)
+            self.defaults.setValue(encodedUser, forKey: "user")
+        }
+        
+        func checkUser () -> Bool {
+            if (self.defaults.object(forKey: "user") != nil){
+                return true
+            } else {
+                return false
+            }
+        }
+        
+        func getUser() -> User {
+            
+            // Sirve para devolver un usuario temporal, si no entra en la condición
+            var tempUser = User(user: "Guest", pass: "", contacts: [])
+           
+            let currentUser: Data = self.defaults.object(forKey: "user") as! Data
+            
+            if let decodedUser = try? JSONDecoder().decode(User.self, from: currentUser){
+                return decodedUser
+            }
+            return tempUser
+        }
     
 }

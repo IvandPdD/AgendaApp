@@ -14,18 +14,32 @@ class AddContactVC: UIViewController{
     
     var master: MainVC?
     
-    @IBOutlet weak var addName: UITextField!
-    @IBOutlet weak var addNumber: UITextField!
+    @IBOutlet weak var addName: MDCTextField!
+    @IBOutlet weak var addNumber: MDCTextField!
+    
+    override func viewDidLoad() {
+        self.hideKeyboardWhenTappedAround()
+    }
     
     @IBAction func confirmAddContact(_ sender: MDCButton) {
         
-        master!.contactName.append(addName.text!)
-        master!.contactNumber.append(addNumber.text!)
-        
-        //NetworkManager.shared.createContact(contact: <#T##Contact#>)
-        
-        self.dismiss(animated: true, completion: {
-            self.master?.collectionView.reloadData()
-        })
+        if (addName.hasTextContent && addNumber.hasTextContent) {
+                    
+            UserData.shared.currentUser.contacts.append(Contact(name: addName.text!, phoneNumber: addNumber.text!))
+            NetworkManager.shared.saveUser(user: UserData.shared.currentUser.user, pass: UserData.shared.currentUser.pass, contacts: UserData.shared.currentUser.contacts)
+            //NetworkManager.shared.createContact(contact: <#T##Contact#>)
+            
+            self.dismiss(animated: true, completion: {
+                self.master?.collectionView.reloadData()
+            })
+        }else{
+            var dialogMessage = UIAlertController(title: "Alert", message: "Empty Fields", preferredStyle: .actionSheet)
+            dialogMessage.isSpringLoaded = true
+            
+            let ok = UIAlertAction(title: "OK", style: .default)
+            dialogMessage.addAction(ok)
+            
+            self.present(dialogMessage, animated: true, completion: nil)
+        }
     }
 }

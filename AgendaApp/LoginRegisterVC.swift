@@ -25,16 +25,49 @@ class LoginRegisterVC: UIViewController{
     }
     
     @IBAction func login(_ sender: MDCRaisedButton) {
+        
         if(userLogin.hasTextContent && passLogin.hasTextContent){
-            NetworkManager.shared.getUser(user: userLogin.text!, pass: passLogin.text!)
-            self.performSegue(withIdentifier: "LoginSegue", sender: Any?.self)
+            if(NetworkManager.shared.checkUser()){
+                
+                UserData.shared.currentUser = NetworkManager.shared.getUser()
+                
+                if(UserData.shared.currentUser.user == userLogin.text && UserData.shared.currentUser.pass == passLogin.text){
+                    
+                    self.performSegue(withIdentifier: "LoginToMain", sender: Any?.self)
+                }
+            }
+//            NetworkManager.shared.getUser(user: userLogin.text!, pass: passLogin.text!)
+//            self.performSegue(withIdentifier: "LoginToMain", sender: Any?.self)
+        }else{
+            var dialogMessage = UIAlertController(title: "Alert", message: "Empty Fields", preferredStyle: .actionSheet)
+            dialogMessage.isSpringLoaded = true
+            
+            let ok = UIAlertAction(title: "OK", style: .default)
+            dialogMessage.addAction(ok)
+            
+            self.present(dialogMessage, animated: true, completion: nil)
         }
     }
     
     @IBAction func register(_ sender: MDCRaisedButton) {
+        
         if(userRegister.hasTextContent && passRegister.hasTextContent && confirmPassRegister.hasTextContent && passRegister.text == confirmPassRegister.text){
-            NetworkManager.shared.createUser(user: userRegister.text!, pass: passRegister.text!)
-            self.performSegue(withIdentifier: "RegisterSegue", sender: Any?.self)
+            
+            var contactList: [Contact] = []
+            
+            NetworkManager.shared.saveUser(user: userRegister.text!, pass: passRegister.text!, contacts: contactList)
+            self.performSegue(withIdentifier: "RegisterToLogin", sender: Any?.self)
+            
+//            NetworkManager.shared.createUser(user: userRegister.text!, pass: passRegister.text!)
+//            self.performSegue(withIdentifier: "RegisterToLogin", sender: Any?.self)
+        }else{
+            var dialogMessage = UIAlertController(title: "Alert", message: "Empty Fields", preferredStyle: .actionSheet)
+            dialogMessage.isSpringLoaded = true
+            
+            let ok = UIAlertAction(title: "OK", style: .default)
+            dialogMessage.addAction(ok)
+            
+            self.present(dialogMessage, animated: true, completion: nil)
         }
     }
 }

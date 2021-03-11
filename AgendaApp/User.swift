@@ -13,11 +13,9 @@ struct User: Codable {
     
     var user: String
     var pass: String
-    var contacts: Contacts
+    var contacts: [Contact]
     
 }
-
-typealias Contacts = [Contact]
 
 struct Contact: Codable{
 
@@ -26,3 +24,9 @@ struct Contact: Codable{
     
 }
 
+class UserData{
+    static var shared: UserData  = UserData()
+    
+    var currentUser: User = User(user: "Guest", pass: "", contacts: [])
+    
+}
