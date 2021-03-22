@@ -16,21 +16,44 @@ class AddContactVC: UIViewController{
     
     @IBOutlet weak var addName: MDCTextField!
     @IBOutlet weak var addNumber: MDCTextField!
+    @IBOutlet weak var addEmail: MDCTextField!
     
     override func viewDidLoad() {
+        super.viewDidLoad()
+        
         self.hideKeyboardWhenTappedAround()
     }
     
     @IBAction func confirmAddContact(_ sender: MDCButton) {
         
-        if (addName.hasTextContent && addNumber.hasTextContent) {
+        let activityIndicator = UIActivityIndicatorView()
+        view.addSubview(activityIndicator)
+        activityIndicator.center = CGPoint(x: self.view.frame.size.width / 2, y: self.view.frame.size.height / 2)
+        activityIndicator.startAnimating()
+        
+        if (addName.hasTextContent && addNumber.hasTextContent && addEmail.hasTextContent) {
                     
-            UserData.shared.currentUser.contacts.append(Contact(name: addName.text!, phoneNumber: addNumber.text!))
-            NetworkManager.shared.saveUser(user: UserData.shared.currentUser.user, pass: UserData.shared.currentUser.pass, contacts: UserData.shared.currentUser.contacts)
-            //NetworkManager.shared.createContact(contact: <#T##Contact#>)
+            NetworkManager.shared.createContact(contact_name: addName.text!, contact_email: addEmail.text!, contact_phone: addNumber.text!, completionHandler: {
+                success in
+                
+                if(success){
+                    activityIndicator.stopAnimating()
+                    
+                    NetworkManager.shared.getContacts(completionHandler: {
+                        contacts in
             
-            self.dismiss(animated: true, completion: {
-                self.master?.collectionView.reloadData()
+                        self.dismiss(animated: true, completion:{
+                            UserData.shared.contacts = contacts
+                            self.master?.collectionView.reloadData()
+                        })
+            
+                    })
+                    
+                    
+                }else{
+                    activityIndicator.stopAnimating()
+                }
+                
             })
         }else{
             var dialogMessage = UIAlertController(title: "Alert", message: "Empty Fields", preferredStyle: .actionSheet)

@@ -11,35 +11,52 @@ import UIKit
 import MaterialComponents
 import Toaster
 
-class SettingsVC: UIViewController,MDCSnackbarManagerDelegate{
-    func willPresentSnackbar(with messageView: MDCSnackbarMessageView) {
-        let message = MDCSnackbarMessage()
-        message.text = "The groundhog (Marmota monax) is also known as a woodchuck or whistlepig."
-    }
+class SettingsVC: UIViewController, UIImagePickerControllerDelegate & UINavigationControllerDelegate{
     
+    let imagePicker = UIImagePickerController()
     
-    @IBOutlet weak var pass: MDCTextField!
-    @IBOutlet weak var newPass: MDCTextField!
+    @IBOutlet weak var photo: UIImageView!
     
     override func viewDidLoad() {
+        super.viewDidLoad()
+        
         self.hideKeyboardWhenTappedAround()
+        
+        imagePicker.delegate = self
+        imagePicker.sourceType = .photoLibrary
+        
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageTapped(tapGestureRecognizer:)))
+        photo.isUserInteractionEnabled = true
+        photo.addGestureRecognizer(tapGestureRecognizer)
     }
     
-    @IBAction func changePass(_ sender: Any) {
-        if(pass.hasTextContent && newPass.hasTextContent && pass.text == UserData.shared.currentUser.pass){
-            //NetworkManager.shared.editUser(newPass: newPass.text!)
-            UserData.shared.currentUser.pass = newPass.text!
-            NetworkManager.shared.saveUser(user: UserData.shared.currentUser.user, pass: UserData.shared.currentUser.pass, contacts: UserData.shared.currentUser.contacts)
-            Toast(text: "Password correctly changed", delay: 0, duration: 5).show()
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if(UserData.shared.photo?.image != nil)
+        {
+            photo.image = UserData.shared.photo?.image
         }
+
     }
     
-    @IBAction func deleteAccount(_ sender: Any) {
+    @objc func imageTapped(tapGestureRecognizer: UITapGestureRecognizer) {
+        present(imagePicker, animated: true, completion: nil)
+                
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+            
+        let image = info[UIImagePickerController.InfoKey.originalImage] as! UIImage
+        self.photo.image = image
+        UserData.shared.photo?.image = image
+        picker.dismiss(animated: true, completion: nil)
+            
+    }
         
-        //NetworkManager.shared.deleteUser(id: <#Int#>)
-        NetworkManager.shared.defaults.removeObject(forKey: "user")
-        self.performSegue(withIdentifier: "DeleteAccountToLogin", sender: Any?.self)
-        
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        imagePicker.dismiss(animated: true, completion: nil)
+            
+        picker.dismiss(animated: true, completion: nil)
     }
     
 }

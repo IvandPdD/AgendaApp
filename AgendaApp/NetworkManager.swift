@@ -10,133 +10,394 @@ import Alamofire
 
 class NetworkManager{
     
-    static var shared: NetworkManager = NetworkManager()
-    let defaults = UserDefaults.standard
-    
-    let url = URL(string: "Some API URL")
-    let apiKey = "API Key"
-    
-    func getUser(user: String, pass: String) {
+    var result = ""
+    var resultContact = ""
         
-        var queryParameters = [
-            "user": user,
-            "pass": pass]
+    static var shared:NetworkManager = NetworkManager()
+    static var respuesta = ""
+    static var respuestaContacto = ""
+    var token = ""
         
-        AF.request(self.url as! URLConvertible, method: .get, parameters: queryParameters, encoding: URLEncoding(destination: .queryString), headers: nil).responseDecodable(of: User.self){
+    func createUser(name: String, email: String, pass: String, confirmPass: String, completion: @escaping(Bool)->Void ){
+                
+        //alamcenamos la URL de la api
+        let url = URL(string: "https://conctactappservice.herokuapp.com/api/register")!
+                
+        //preparamos las variables a enviar
+        let register: [String:Any] = ["name": name, "email": email, "password": pass, "password_confirmation": confirmPass]
+                
+        //las transformamos en JSON
+        let registerJson = try? JSONSerialization.data(withJSONObject: register)
+                
+        //llamamos a la request junto a la URL
+        var request = URLRequest(url: url)
+                
+        //indicamos el protocolo
+        request.httpMethod = "POST"
+                
+        // contenido del body
+        request.httpBody = registerJson
+                
+        //le introducimos los headers necesarios
+        request.headers = ["Content-Type": "application/json"]
+                
+        //se envia la peticion usando alamofire
+        //utilizamos el completion handler para sincronizar peticiones
+        AF.request(request).validate().response{ response in
+                    
+            DispatchQueue.global().sync(){
+                switch response.result{
+                
+                case .success(_):
+                    completion(true)
+                case .failure(_):
+                    completion(false)
+                }
+            }
+        }
+    }
+        
+    func loginUser(email: String, password: String,completionHandler: @escaping(Bool) -> Void ){
+                
+        struct LoginUser: Codable {
+            let token: String
+        }
+                
+        //alamcenamos la URL de la api en una varianle
+        let url = URL(string: "https://conctactappservice.herokuapp.com/api/login")!
+                
+        //preparamos las variables a enviar
+        let login: [String:Any] = ["email": email , "password": password]
+                
+        //las transformamos en JSON
+        let jsonLogin = try? JSONSerialization.data(
+            withJSONObject: login,
+            options: [])
+                
+        //llamamos a la request, dandole la url
+        var request = URLRequest(url: url)
+                
+        //se le indica el protocolo con el que se envia
+        request.httpMethod = "POST"
+                
+        //se le indica el contenido del body
+        request.httpBody = jsonLogin
+                
+        //el header
+        request.headers = ["Content-Type": "application/json"]
+                
+        //se envia la peticion usando alamofire
+        AF.request(request).validate().response(){
             response in
-            //TO DO when response obtained
+            
+            DispatchQueue.global().sync {
+                switch response.result{
+                    
+                case .success(_):
+                    let user = try? JSONDecoder().decode(LoginUser.self , from: response.data!)
+            
+                    self.token = user!.token
+                    
+                    completionHandler(true)
+                    
+                case .failure(_):
+                    completionHandler(false)
+                }
 
+            }
         }
-        
     }
     
-    func createUser(user: String, pass: String){
-        
-        var queryParameters = [
-            "user": user,
-            "pass": pass]
-        
-        AF.request(self.url as! URLConvertible, method: .post, parameters: queryParameters, encoding: URLEncoding(destination: .queryString), headers: nil).responseDecodable(of: User.self){
-            response in
-            
-        }
+    func getContacts(completionHandler: @escaping([ContactElement]) -> Void) {
 
-    }
-    
-    func editUser(newPass: String){
-        
-        var queryParameters = [
-            "pass": newPass]
-        
-        var headers: HTTPHeaders = ["Authorization": self.apiKey]
-        
-        AF.request(self.url as! URLConvertible, method: .post, parameters: queryParameters, encoding: URLEncoding(destination: .queryString), headers: headers ).responseDecodable(of: User.self){
-            response in
-            
-        }
-    }
-    
-    func createContact(contact: Contact){
-        
-        var queryParameters = [
-            "contact": contact]
-        
-        var headers: HTTPHeaders = ["Authorization": self.apiKey]
-        
-        AF.request(self.url as! URLConvertible, method: .post, parameters: queryParameters, encoding: URLEncoding(destination: .queryString), headers: headers ).responseDecodable(of: User.self){
-            response in
-            
-        }
-        
-    }
-    
-    func modifyContact(contactAt: Int, contact: Contact){
-        
-        var queryParameters = [
-            "contact_id": contactAt,
-            "contact": contact] as [String : Any]
-        
-        var headers: HTTPHeaders = ["Authorization": self.apiKey]
-        
-        AF.request(self.url as! URLConvertible, method: .post, parameters: queryParameters, encoding: URLEncoding(destination: .queryString), headers: headers ).responseDecodable(of: User.self){
-            response in
-            
-        }
-    }
-    
-    func deleteContact(contactAt: Int){
-        
-        var queryParameters = [
-            "contact_id": contactAt]
-        
-        var headers: HTTPHeaders = ["Authorization": self.apiKey]
-        
-        AF.request(self.url as! URLConvertible, method: .post, parameters: queryParameters, encoding: URLEncoding(destination: .queryString), headers: headers ).responseDecodable(of: User.self){
-            response in
-            
-        }
-    }
-    
-    func deleteUser(id: Int){
-        
-        var queryParameters = [
-            "id": id]
-        
-        var headers: HTTPHeaders = ["Authorization": self.apiKey]
-        
-        AF.request(self.url as! URLConvertible, method: .post, parameters: queryParameters, encoding: URLEncoding(destination: .queryString), headers: headers ).responseDecodable(of: String.self){
-            response in
-            
-        }
-    }
-    
-    /// -DEFAULTS
-    func saveUser (user: String, pass: String, contacts: [Contact]){
-            let user = User(user: user, pass: pass, contacts: contacts)
+        let url = URL(string: "https://conctactappservice.herokuapp.com/api/showContact")
+        var contact: [ContactElement] = []
 
-            let encodedUser = try? JSONEncoder().encode(user)
-            self.defaults.setValue(encodedUser, forKey: "user")
+        var request = URLRequest(url: url!)
+
+        request.httpMethod = "GET"
+
+        request.headers = ["Content-Type": "application/json",
+                           "Authorization":"Bearer" + token]
+
+        AF.request(request).validate().responseJSON {
+            response in
+
+                if (response.error == nil) {
+                    do {
+                        contact = try JSONDecoder().decode([ContactElement].self, from: response.data!)
+                        completionHandler(contact)
+
+                    } catch {
+                        print("No hay contactos")
+                    }
+                }
         }
+    }
+    
         
-        func checkUser () -> Bool {
-            if (self.defaults.object(forKey: "user") != nil){
-                return true
-            } else {
-                return false
+        func createContact(contact_name: String, contact_email: String, contact_phone: String,completionHandler: @escaping(Bool)->Void){
+                
+            struct Contact: Encodable {
+                    
+                let contact_name: String
+                let contact_email: String
+                let contact_phone: String
+            }
+                
+            //alamcenamos la URL de la api en una varianle
+            let url = URL(string: "https://conctactappservice.herokuapp.com/api/create")!
+            
+            //preparamos las variables a enviar
+            let contact: [String:Any] = ["contact_name": contact_name, "contact_email": contact_email, "contact_phone": contact_phone]
+            
+            //las transformamos en JSON
+            let jsonContact = try? JSONSerialization.data(
+            withJSONObject: contact)
+            
+            //llamamos a la request, dandole la url
+            var request = URLRequest(url: url)
+            
+            //se le indica el protocolo con el que se envia
+            request.httpMethod = "POST"
+            
+            //se le indica el contenido del body
+            request.httpBody = jsonContact
+        
+            //el header
+            request.headers = ["Content-Type": "application/json",
+                               "Authorization":"Bearer" + self.token]
+            
+            //se envia la peticion usando alamofire
+            AF.request(request).validate().response {
+                response in
+                
+                switch response.result{
+                    
+                case .success(_):
+                    completionHandler(true)
+                case .failure(_):
+                    completionHandler(false)
+                }
             }
         }
         
-        func getUser() -> User {
+        
+        func deleteContact(id: String,completionHandler: @escaping(Bool)->Void){
             
-            // Sirve para devolver un usuario temporal, si no entra en la condición
-            var tempUser = User(user: "Guest", pass: "", contacts: [])
-           
-            let currentUser: Data = self.defaults.object(forKey: "user") as! Data
-            
-            if let decodedUser = try? JSONDecoder().decode(User.self, from: currentUser){
-                return decodedUser
+            struct Delete: Encodable {
+                        
+                let id: String
             }
-            return tempUser
+            
+            //alamcenamos la URL de la api en una varianle
+            let url = URL(string: "https://conctactappservice.herokuapp.com/api/eraseContact")!
+                    
+            //preparamos las variables a enviar
+            let login: [String:Any] = ["id": id]
+                    
+            //las transformamos en JSON
+            let jsonLogin = try? JSONSerialization.data(
+                withJSONObject: login,
+                options: [])
+                    
+            //llamamos a la request, dandole la url
+            var request = URLRequest(url: url)
+                    
+            //se le indica el protocolo con el que se envia
+            request.httpMethod = "POST"
+                    
+            //se le indica el contenido del body
+            request.httpBody = jsonLogin
+                    
+            //el header
+            request.headers = ["Content-Type": "application/json",
+                               "Authorization":"Bearer" + self.token]
+                    
+            //se envia la peticion usando alamofire
+            AF.request(request).validate().response(){
+                response in
+                
+                switch response.result{
+                    
+                case .success(_):
+                    completionHandler(true)
+                case .failure(_):
+                    completionHandler(false)
+                }
+            }
         }
+        
+        func deleteUser(completionHandler: @escaping(Bool) -> Void){
+            
+            //alamcenamos la URL de la api en una varianle
+            let url = URL(string: "https://conctactappservice.herokuapp.com/api/eraseUser")!
+                    
+            //llamamos a la request, dandole la url
+            var request = URLRequest(url: url)
+                    
+            //se le indica el protocolo con el que se envia
+            request.httpMethod = "POST"
+                    
+            //el header
+            request.headers = ["Content-Type": "application/json",
+                               "Authorization":"Bearer" + self.token]
+                    
+            //se envia la peticion usando alamofire
+            AF.request(request).validate().response(){
+                response in
+                
+                DispatchQueue.global().sync {
+                    switch response.result{
+                    
+                    case .success(_):
+                        completionHandler(true)
+                    case .failure(_):
+                        completionHandler(false)
+                    }
+                }
+            }
+        }
+        
+        func forgotPass(email: String,completionHandler: @escaping(Bool) -> Void){
+            
+            struct forgot: Encodable {
+                        
+                let email: String
+            }
+            
+                    
+            //alamcenamos la URL de la api en una varianle
+            let url = URL(string: "https://conctactappservice.herokuapp.com/api/password/email")!
+                    
+            //preparamos las variables a enviar
+            let contact: [String:Any] = [ "email": email]
+                    
+            //las transformamos en JSON
+            let jsonLogin = try? JSONSerialization.data(
+                withJSONObject: contact,
+                options: [])
+                    
+            //llamamos a la request, dandole la url
+            var request = URLRequest(url: url)
+                    
+            //se le indica el protocolo con el que se envia
+            request.httpMethod = "POST"
+                    
+            //se le indica el contenido del body
+            request.httpBody = jsonLogin
+                    
+            //el header
+            request.headers = ["Content-Type": "application/json"]
+                    
+            //se envia la peticion usando alamofire
+            AF.request(request).validate().response(){ response in
+                
+                let defaults = UserDefaults.standard
+                
+                switch response.result{
+                
+                case .success(_):
+                    completionHandler(true)
+                case .failure(_):
+                    completionHandler(false)
+                }
+            }
+        }
+        
+        func modifyContact(id: String,contact_name: String, contact_email: String, contact_phone: String,completionHandler: @escaping(Bool)->Void){
+            
+            struct Modify: Encodable {
+                    
+                let id: String
+                let contact_name: String
+                let contact_email: String
+                let contact_phone: String
+            }
+            
+            let string_id = String(id)
+                    
+            //alamcenamos la URL de la api en una varianle
+            let url = URL(string: "https://conctactappservice.herokuapp.com/api/updateContact/" + string_id)!
+                    
+            //preparamos las variables a enviar
+            let contact: [String:Any] = ["contact_name": contact_name, "contact_email": contact_email, "contact_phone": contact_phone]
+                    
+            //las transformamos en JSON
+            let jsonLogin = try? JSONSerialization.data(
+                withJSONObject: contact,
+                options: [])
+                    
+            //llamamos a la request, dandole la url
+            var request = URLRequest(url: url)
+                    
+            //se le indica el protocolo con el que se envia
+            request.httpMethod = "POST"
+                    
+            //se le indica el contenido del body
+            request.httpBody = jsonLogin
+                    
+            //el header
+            request.headers = ["Content-Type": "application/json",
+                               "Authorization":"Bearer" + self.token]
+                    
+            //se envia la peticion usando alamofire
+            AF.request(request).validate().response(){ response in
+                
+                let defaults = UserDefaults.standard
+                
+                switch response.result{
+                
+                case .success(_):
+                    completionHandler(true)
+                case .failure(_):
+                    completionHandler(false)
+                }
+            }
+        }
+    
+    func changePass(newPass: String, completion: @escaping(Bool)->Void){
+        
+        struct ChangePass: Encodable {
+                
+            let pass: String
+        }
+                
+        //alamcenamos la URL de la api en una varianle
+        let url = URL(string: "https://conctactappservice.herokuapp.com/api/changePass/")!
+                
+        //preparamos las variables a enviar
+        let contact: [String:Any] = ["pass": newPass]
+                
+        //las transformamos en JSON
+        let jsonLogin = try? JSONSerialization.data(
+            withJSONObject: contact,
+            options: [])
+                
+        //llamamos a la request, dandole la url
+        var request = URLRequest(url: url)
+                
+        //se le indica el protocolo con el que se envia
+        request.httpMethod = "POST"
+                
+        //se le indica el contenido del body
+        request.httpBody = jsonLogin
+                
+        //el header
+        request.headers = ["Content-Type": "application/json",
+                           "Authorization":"Bearer" + self.token]
+                
+        //se envia la peticion usando alamofire
+        AF.request(request).validate().response(){ response in
+            
+            switch response.result{
+            
+            case .success(_):
+                completion(true)
+            case .failure(_):
+                completion(false)
+            }
+        }
+    }
     
 }

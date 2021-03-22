@@ -11,11 +11,14 @@ import UIKit
 import MaterialComponents
 
 class ContactCell: MDCCardCollectionCell {
+    
+    var editable: Bool = false
  
     @IBOutlet weak var photo: UIImageView!
     @IBOutlet weak var name: UITextField!
     @IBOutlet weak var phoneNumber: UITextField!
     @IBOutlet weak var editContact: MDCButton!
+    @IBOutlet weak var email: UITextField!
     @IBOutlet weak var deleteContact: MDCButton!
     
     var editButtonAction : (() -> ())?

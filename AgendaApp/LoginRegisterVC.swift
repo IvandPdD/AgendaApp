@@ -14,45 +14,98 @@ class LoginRegisterVC: UIViewController{
     
     @IBOutlet weak var userLogin: MDCTextField!
     @IBOutlet weak var passLogin: MDCTextField!
+    @IBOutlet weak var emailRegister: MDCTextField!
     @IBOutlet weak var userRegister: MDCTextField!
     @IBOutlet weak var passRegister: MDCTextField!
     @IBOutlet weak var confirmPassRegister: MDCTextField!
     
-    
     override func viewDidLoad() {
+        super.viewDidLoad()
         
         self.hideKeyboardWhenTappedAround()
     }
     
     @IBAction func login(_ sender: MDCRaisedButton) {
         
+        let activityIndicator = UIActivityIndicatorView()
+        view.addSubview(activityIndicator)
+        activityIndicator.center = CGPoint(x: self.view.frame.size.width / 2, y: self.view.frame.size.height / 2)
+        activityIndicator.startAnimating()
+        
+        
         if(userLogin.hasTextContent && passLogin.hasTextContent){
-            if(NetworkManager.shared.checkUser()){
-                
-                UserData.shared.currentUser = NetworkManager.shared.getUser()
-                
-                if(UserData.shared.currentUser.user == userLogin.text && UserData.shared.currentUser.pass == passLogin.text){
-                    
+
+            NetworkManager.shared.loginUser(email: userLogin.text!, password: passLogin.text!, completionHandler: {
+                success in
+                if(success){
+                    activityIndicator.stopAnimating()
                     self.performSegue(withIdentifier: "LoginToMain", sender: Any?.self)
+                    
+                }else{
+                    activityIndicator.stopAnimating()
+                    
+                    var dialogMessage = UIAlertController(title: "Alert", message: "Incorrect data", preferredStyle: .alert)
+                    dialogMessage.isSpringLoaded = true
+                    
+                    let ok = UIAlertAction(title: "OK", style: .default)
+                    dialogMessage.addAction(ok)
+                    
+                    self.present(dialogMessage, animated: true, completion: nil)
                 }
-            }
-//            NetworkManager.shared.getUser(user: userLogin.text!, pass: passLogin.text!)
-//            self.performSegue(withIdentifier: "LoginToMain", sender: Any?.self)
+            })
+
+        }else{
+            activityIndicator.stopAnimating()
+            
+            var dialogMessage = UIAlertController(title: "Alert", message: "Empty Fields", preferredStyle: .actionSheet)
+            dialogMessage.isSpringLoaded = true
+            
+            let ok = UIAlertAction(title: "OK", style: .default)
+            dialogMessage.addAction(ok)
+            
+            self.present(dialogMessage, animated: true, completion: nil)
         }
     }
     
     @IBAction func register(_ sender: MDCRaisedButton) {
         
+        let activityIndicator = UIActivityIndicatorView()
+        view.addSubview(activityIndicator)
+        activityIndicator.center = CGPoint(x: self.view.frame.size.width / 2, y: self.view.frame.size.height / 2)
+        activityIndicator.startAnimating()
+        
         if(userRegister.hasTextContent && passRegister.hasTextContent && confirmPassRegister.hasTextContent && passRegister.text == confirmPassRegister.text){
             
-            var contactList: [Contact] = []
+            NetworkManager.shared.createUser(name: userRegister.text!, email: emailRegister.text!, pass: passRegister.text!, confirmPass: confirmPassRegister.text!, completion: {
+                success in
+                
+                if (success){
+                    activityIndicator.stopAnimating()
+                    self.performSegue(withIdentifier: "RegisterToLogin", sender: Any?.self)
+                }else{
+                    activityIndicator.stopAnimating()
+                    
+                    var dialogMessage = UIAlertController(title: "Alert", message: "Empty Fields", preferredStyle: .alert)
+                    dialogMessage.isSpringLoaded = true
+                    
+                    let ok = UIAlertAction(title: "OK", style: .default)
+                    dialogMessage.addAction(ok)
+                    
+                    self.present(dialogMessage, animated: true, completion: nil)
+                }
+                
+            })
+        }else{
+            activityIndicator.stopAnimating()
+            var dialogMessage = UIAlertController(title: "Alert", message: "Incorrect data", preferredStyle: .actionSheet)
+            dialogMessage.isSpringLoaded = true
             
-            NetworkManager.shared.saveUser(user: userRegister.text!, pass: passRegister.text!, contacts: contactList)
-            self.performSegue(withIdentifier: "RegisterToLogin", sender: Any?.self)
+            let ok = UIAlertAction(title: "OK", style: .default)
+            dialogMessage.addAction(ok)
             
-//            NetworkManager.shared.createUser(user: userRegister.text!, pass: passRegister.text!)
-//            self.performSegue(withIdentifier: "RegisterToLogin", sender: Any?.self)
+            self.present(dialogMessage, animated: true, completion: nil)
         }
+        
     }
 }
 

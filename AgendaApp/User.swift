@@ -7,26 +7,38 @@
 //
 
 import Foundation
+import UIKit
 
 
+// MARK: - UserClass
 struct User: Codable {
-    
-    var user: String
-    var pass: String
-    var contacts: [Contact]
-    
+    let id: Int
+    let name, email: String
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, email
+    }
 }
 
-struct Contact: Codable{
+struct ContactElement: Codable {
+    let id, userID: Int
+    let name: String
+    let phoneNumber: Int
+    let email: String
 
-    var name: String
-    var phoneNumber: String
-    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case userID = "user_id"
+        case name = "contact_name"
+        case phoneNumber = "contact_phone"
+        case email = "contact_email"
+    }
+
 }
 
 class UserData{
-    static var shared: UserData  = UserData()
+    static var shared: UserData = UserData()
     
-    var currentUser: User = User(user: "Guest", pass: "", contacts: [])
-    
+    var contacts: [ContactElement] = []
+    var photo: UIImageView?
 }
