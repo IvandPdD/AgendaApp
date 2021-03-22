@@ -18,21 +18,18 @@ class DeleteAccountVC: UIViewController{
     
     @IBAction func deleteAccount(_ sender: Any) {
         
-        let activityIndicator = UIActivityIndicatorView()
-        view.addSubview(activityIndicator)
-        activityIndicator.center = CGPoint(x: self.view.frame.size.width / 2, y: self.view.frame.size.height / 2)
-        activityIndicator.startAnimating()
+        self.showSpinner(onView: self.view)
         
-        NetworkManager.shared.deleteUser(completionHandler: {
+        NetworkManager.shared.deleteUser(completion: {
             success in
             
             if(success){
                 
-                activityIndicator.stopAnimating()
+                self.removeSpinner()
                 self.performSegue(withIdentifier: "DeleteAccountToLogin", sender: Any?.self)
                 
             }else{
-                activityIndicator.stopAnimating()
+                self.removeSpinner()
                 
                 var dialogMessage = UIAlertController(title: "Alert", message: "Incorrect data", preferredStyle: .alert)
                 dialogMessage.isSpringLoaded = true

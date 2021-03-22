@@ -57,7 +57,7 @@ class NetworkManager{
         }
     }
         
-    func loginUser(email: String, password: String,completionHandler: @escaping(Bool) -> Void ){
+    func loginUser(email: String, pass: String,completion: @escaping(Bool) -> Void ){
                 
         struct LoginUser: Codable {
             let token: String
@@ -67,7 +67,7 @@ class NetworkManager{
         let url = URL(string: "https://conctactappservice.herokuapp.com/api/login")!
                 
         //preparamos las variables a enviar
-        let login: [String:Any] = ["email": email , "password": password]
+        let login: [String:Any] = ["email": email , "password": pass]
                 
         //las transformamos en JSON
         let jsonLogin = try? JSONSerialization.data(
@@ -98,17 +98,17 @@ class NetworkManager{
             
                     self.token = user!.token
                     
-                    completionHandler(true)
+                    completion(true)
                     
                 case .failure(_):
-                    completionHandler(false)
+                    completion(false)
                 }
 
             }
         }
     }
     
-    func getContacts(completionHandler: @escaping([ContactElement]) -> Void) {
+    func getContacts(completion: @escaping([ContactElement]) -> Void) {
 
         let url = URL(string: "https://conctactappservice.herokuapp.com/api/showContact")
         var contact: [ContactElement] = []
@@ -126,7 +126,7 @@ class NetworkManager{
                 if (response.error == nil) {
                     do {
                         contact = try JSONDecoder().decode([ContactElement].self, from: response.data!)
-                        completionHandler(contact)
+                        completion(contact)
 
                     } catch {
                         print("No hay contactos")
@@ -136,7 +136,7 @@ class NetworkManager{
     }
     
         
-        func createContact(contact_name: String, contact_email: String, contact_phone: String,completionHandler: @escaping(Bool)->Void){
+        func createContact(name: String, email: String, phoneNumber: String, completion: @escaping(Bool) -> Void){
                 
             struct Contact: Encodable {
                     
@@ -149,7 +149,7 @@ class NetworkManager{
             let url = URL(string: "https://conctactappservice.herokuapp.com/api/create")!
             
             //preparamos las variables a enviar
-            let contact: [String:Any] = ["contact_name": contact_name, "contact_email": contact_email, "contact_phone": contact_phone]
+            let contact: [String:Any] = ["contact_name": name, "contact_email": email, "contact_phone": phoneNumber]
             
             //las transformamos en JSON
             let jsonContact = try? JSONSerialization.data(
@@ -175,15 +175,15 @@ class NetworkManager{
                 switch response.result{
                     
                 case .success(_):
-                    completionHandler(true)
+                    completion(true)
                 case .failure(_):
-                    completionHandler(false)
+                    completion(false)
                 }
             }
         }
         
         
-        func deleteContact(id: String,completionHandler: @escaping(Bool)->Void){
+        func deleteContact(id: String, completion: @escaping(Bool) -> Void){
             
             struct Delete: Encodable {
                         
@@ -221,14 +221,14 @@ class NetworkManager{
                 switch response.result{
                     
                 case .success(_):
-                    completionHandler(true)
+                    completion(true)
                 case .failure(_):
-                    completionHandler(false)
+                    completion(false)
                 }
             }
         }
         
-        func deleteUser(completionHandler: @escaping(Bool) -> Void){
+        func deleteUser(completion: @escaping(Bool) -> Void){
             
             //alamcenamos la URL de la api en una varianle
             let url = URL(string: "https://conctactappservice.herokuapp.com/api/eraseUser")!
@@ -251,15 +251,15 @@ class NetworkManager{
                     switch response.result{
                     
                     case .success(_):
-                        completionHandler(true)
+                        completion(true)
                     case .failure(_):
-                        completionHandler(false)
+                        completion(false)
                     }
                 }
             }
         }
         
-        func forgotPass(email: String,completionHandler: @escaping(Bool) -> Void){
+        func forgotPass(email: String, completion: @escaping(Bool) -> Void){
             
             struct forgot: Encodable {
                         
@@ -291,21 +291,22 @@ class NetworkManager{
             request.headers = ["Content-Type": "application/json"]
                     
             //se envia la peticion usando alamofire
-            AF.request(request).validate().response(){ response in
+            AF.request(request).validate().response(){
+                response in
                 
                 let defaults = UserDefaults.standard
                 
                 switch response.result{
                 
                 case .success(_):
-                    completionHandler(true)
+                    completion(true)
                 case .failure(_):
-                    completionHandler(false)
+                    completion(false)
                 }
             }
         }
         
-        func modifyContact(id: String,contact_name: String, contact_email: String, contact_phone: String,completionHandler: @escaping(Bool)->Void){
+        func modifyContact(id: String, name: String, email: String, phoneNumber: String, completion: @escaping(Bool) -> Void){
             
             struct Modify: Encodable {
                     
@@ -321,7 +322,7 @@ class NetworkManager{
             let url = URL(string: "https://conctactappservice.herokuapp.com/api/updateContact/" + string_id)!
                     
             //preparamos las variables a enviar
-            let contact: [String:Any] = ["contact_name": contact_name, "contact_email": contact_email, "contact_phone": contact_phone]
+            let contact: [String:Any] = ["contact_name": name, "contact_email": email, "contact_phone": phoneNumber]
                     
             //las transformamos en JSON
             let jsonLogin = try? JSONSerialization.data(
@@ -342,16 +343,17 @@ class NetworkManager{
                                "Authorization":"Bearer" + self.token]
                     
             //se envia la peticion usando alamofire
-            AF.request(request).validate().response(){ response in
+            AF.request(request).validate().response(){
+                response in
                 
                 let defaults = UserDefaults.standard
                 
                 switch response.result{
                 
                 case .success(_):
-                    completionHandler(true)
+                    completion(true)
                 case .failure(_):
-                    completionHandler(false)
+                    completion(false)
                 }
             }
         }
@@ -388,7 +390,8 @@ class NetworkManager{
                            "Authorization":"Bearer" + self.token]
                 
         //se envia la peticion usando alamofire
-        AF.request(request).validate().response(){ response in
+        AF.request(request).validate().response(){
+            response in
             
             switch response.result{
             

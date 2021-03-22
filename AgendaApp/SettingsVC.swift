@@ -40,7 +40,13 @@ class SettingsVC: UIViewController, UIImagePickerControllerDelegate & UINavigati
     }
     
     @objc func imageTapped(tapGestureRecognizer: UITapGestureRecognizer) {
-        present(imagePicker, animated: true, completion: nil)
+        self.showSpinner(onView: self.view)
+        DispatchQueue.global().async {
+            DispatchQueue.main.async {
+                self.present(self.imagePicker, animated: true, completion: {self.removeSpinner()})
+            }
+        }
+        
                 
     }
     

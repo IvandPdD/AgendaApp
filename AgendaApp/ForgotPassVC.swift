@@ -19,16 +19,13 @@ class ForgotPassVC: UIViewController{
     
     @IBAction func submit(_ sender: Any) {
         
-        let activityIndicator = UIActivityIndicatorView()
-        view.addSubview(activityIndicator)
-        activityIndicator.center = CGPoint(x: self.view.frame.size.width / 2, y: self.view.frame.size.height / 2)
-        activityIndicator.startAnimating()
+        self.showSpinner(onView: self.view)
         
-        NetworkManager.shared.forgotPass(email: email.text!, completionHandler: {
+        NetworkManager.shared.forgotPass(email: email.text!, completion: {
             success in
             
             if(success){
-                activityIndicator.stopAnimating()
+                self.removeSpinner()
                 
                 var dialogMessage = UIAlertController(title: "Alert", message: "Email correctly sent", preferredStyle: .actionSheet)
                 dialogMessage.isSpringLoaded = true
@@ -36,7 +33,7 @@ class ForgotPassVC: UIViewController{
                 let ok = UIAlertAction(title: "OK", style: .default)
                 dialogMessage.addAction(ok)
             }else{
-                activityIndicator.stopAnimating()
+                self.removeSpinner()
             }
         })
     }

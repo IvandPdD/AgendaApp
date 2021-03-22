@@ -39,14 +39,11 @@ class MainVC: UIViewController{
         
         self.addButton?.addTarget(self, action: #selector(self.addContact(sender:)), for: .touchUpInside)
         
-        NetworkManager.shared.getContacts(completionHandler: {
-            contact in
+        NetworkManager.shared.getContacts(completion: {
+            contacts in
             
-            if (contact != nil){
-                
-                UserData.shared.contacts = contact
+                UserData.shared.contacts = contacts
                 self.collectionView.reloadData()
-            }
             
         })
     }
@@ -109,13 +106,15 @@ extension MainVC: UICollectionViewDataSource, UICollectionViewDelegate,UICollect
                 currentCell.email.borderStyle = .roundedRect
                 
             }else{
-                NetworkManager.shared.modifyContact(id: String(UserData.shared.contacts[indexPath.row].id), contact_name: currentCell.name.text!, contact_email: currentCell.email.text!, contact_phone: currentCell.phoneNumber.text!, completionHandler: {
+                self.showSpinner(onView: self.view)
+                NetworkManager.shared.modifyContact(id: String(UserData.shared.contacts[indexPath.row].id), name: currentCell.name.text!, email: currentCell.email.text!, phoneNumber: currentCell.phoneNumber.text!, completion: {
                     success in
                     
                     if(success){
-                        NetworkManager.shared.getContacts(completionHandler: {
+                        NetworkManager.shared.getContacts(completion: {
                             contact in
-
+                            
+                            self.removeSpinner()
                             UserData.shared.contacts = contact
                             currentCell.editContact.setImage(UIImage(systemName: "pencil"), for: .normal)
                             currentCell.setShadowElevation(ShadowElevation(rawValue: 2), for: .normal)
@@ -125,7 +124,7 @@ extension MainVC: UICollectionViewDataSource, UICollectionViewDelegate,UICollect
                             
                         })
                     }else{
-                        print("Nope")
+                        self.removeSpinner()
                     }
                 })
                 
@@ -135,6 +134,7 @@ extension MainVC: UICollectionViewDataSource, UICollectionViewDelegate,UICollect
         }
             
         cell.deleteButtonAction = {
+            self.showSpinner(onView: self.view)
             
             let currentCell = collectionView.cellForItem(at: indexPath) as! ContactCell
             currentCell.editable = false
@@ -145,20 +145,21 @@ extension MainVC: UICollectionViewDataSource, UICollectionViewDelegate,UICollect
             currentCell.setShadowElevation(ShadowElevation(rawValue: 2), for: .normal)
             collectionView.deleteItems(at: [indexPath])
             
-            NetworkManager.shared.deleteContact(id: String(UserData.shared.contacts[indexPath.row].id), completionHandler: {
+            NetworkManager.shared.deleteContact(id: String(UserData.shared.contacts[indexPath.row].id), completion: {
                 success in
                 
                 if(success){
-                    NetworkManager.shared.getContacts(completionHandler: {
+                    NetworkManager.shared.getContacts(completion: {
                         contact in
                         
-                            UserData.shared.contacts = contact
-                            //self.collectionView.reloadData()
+                        self.removeSpinner()
+                        UserData.shared.contacts = contact
+                        //self.collectionView.reloadData()
                         
                         
                     })
                 }else{
-                    print("nope")
+                    self.removeSpinner()
                 }
             })
             

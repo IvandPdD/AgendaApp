@@ -26,20 +26,17 @@ class AddContactVC: UIViewController{
     
     @IBAction func confirmAddContact(_ sender: MDCButton) {
         
-        let activityIndicator = UIActivityIndicatorView()
-        view.addSubview(activityIndicator)
-        activityIndicator.center = CGPoint(x: self.view.frame.size.width / 2, y: self.view.frame.size.height / 2)
-        activityIndicator.startAnimating()
+        self.showSpinner(onView: self.view)
         
         if (addName.hasTextContent && addNumber.hasTextContent && addEmail.hasTextContent) {
                     
-            NetworkManager.shared.createContact(contact_name: addName.text!, contact_email: addEmail.text!, contact_phone: addNumber.text!, completionHandler: {
+            NetworkManager.shared.createContact(name: addName.text!, email: addEmail.text!, phoneNumber: addNumber.text!, completion: {
                 success in
                 
                 if(success){
-                    activityIndicator.stopAnimating()
+                    self.removeSpinner()
                     
-                    NetworkManager.shared.getContacts(completionHandler: {
+                    NetworkManager.shared.getContacts(completion: {
                         contacts in
             
                         self.dismiss(animated: true, completion:{
@@ -51,11 +48,13 @@ class AddContactVC: UIViewController{
                     
                     
                 }else{
-                    activityIndicator.stopAnimating()
+                    self.removeSpinner()
                 }
                 
             })
         }else{
+            self.removeSpinner()
+            
             var dialogMessage = UIAlertController(title: "Alert", message: "Empty Fields", preferredStyle: .actionSheet)
             dialogMessage.isSpringLoaded = true
             

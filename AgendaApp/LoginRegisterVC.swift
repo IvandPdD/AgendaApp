@@ -27,23 +27,18 @@ class LoginRegisterVC: UIViewController{
     
     @IBAction func login(_ sender: MDCRaisedButton) {
         
-        let activityIndicator = UIActivityIndicatorView()
-        view.addSubview(activityIndicator)
-        activityIndicator.center = CGPoint(x: self.view.frame.size.width / 2, y: self.view.frame.size.height / 2)
-        activityIndicator.startAnimating()
-        
+        self.showSpinner(onView: self.view)
         
         if(userLogin.hasTextContent && passLogin.hasTextContent){
 
-            NetworkManager.shared.loginUser(email: userLogin.text!, password: passLogin.text!, completionHandler: {
+            NetworkManager.shared.loginUser(email: userLogin.text!, pass: passLogin.text!, completion: {
                 success in
                 if(success){
-                    activityIndicator.stopAnimating()
+                    self.removeSpinner()
                     self.performSegue(withIdentifier: "LoginToMain", sender: Any?.self)
                     
                 }else{
-                    activityIndicator.stopAnimating()
-                    
+                    self.removeSpinner()
                     var dialogMessage = UIAlertController(title: "Alert", message: "Incorrect data", preferredStyle: .alert)
                     dialogMessage.isSpringLoaded = true
                     
@@ -55,7 +50,6 @@ class LoginRegisterVC: UIViewController{
             })
 
         }else{
-            activityIndicator.stopAnimating()
             
             var dialogMessage = UIAlertController(title: "Alert", message: "Empty Fields", preferredStyle: .actionSheet)
             dialogMessage.isSpringLoaded = true
@@ -69,10 +63,7 @@ class LoginRegisterVC: UIViewController{
     
     @IBAction func register(_ sender: MDCRaisedButton) {
         
-        let activityIndicator = UIActivityIndicatorView()
-        view.addSubview(activityIndicator)
-        activityIndicator.center = CGPoint(x: self.view.frame.size.width / 2, y: self.view.frame.size.height / 2)
-        activityIndicator.startAnimating()
+        self.showSpinner(onView: self.view)
         
         if(userRegister.hasTextContent && passRegister.hasTextContent && confirmPassRegister.hasTextContent && passRegister.text == confirmPassRegister.text){
             
@@ -80,10 +71,10 @@ class LoginRegisterVC: UIViewController{
                 success in
                 
                 if (success){
-                    activityIndicator.stopAnimating()
+                    self.removeSpinner()
                     self.performSegue(withIdentifier: "RegisterToLogin", sender: Any?.self)
                 }else{
-                    activityIndicator.stopAnimating()
+                    self.removeSpinner()
                     
                     var dialogMessage = UIAlertController(title: "Alert", message: "Empty Fields", preferredStyle: .alert)
                     dialogMessage.isSpringLoaded = true
@@ -96,7 +87,8 @@ class LoginRegisterVC: UIViewController{
                 
             })
         }else{
-            activityIndicator.stopAnimating()
+            self.removeSpinner()
+            
             var dialogMessage = UIAlertController(title: "Alert", message: "Incorrect data", preferredStyle: .actionSheet)
             dialogMessage.isSpringLoaded = true
             
@@ -109,7 +101,10 @@ class LoginRegisterVC: UIViewController{
     }
 }
 
+var vSpinner : UIView?
+
 extension UIViewController {
+    
     func hideKeyboardWhenTappedAround() {
         let tap = UITapGestureRecognizer(target: self, action: #selector(UIViewController.dismissKeyboard))
         tap.cancelsTouchesInView = false
@@ -119,4 +114,26 @@ extension UIViewController {
     @objc func dismissKeyboard() {
         view.endEditing(true)
     }
+    
+    func showSpinner(onView : UIView) {
+            let spinnerView = UIView.init(frame: onView.bounds)
+            spinnerView.backgroundColor = UIColor.init(red: 0.5, green: 0.5, blue: 0.5, alpha: 0.5)
+            let ai = UIActivityIndicatorView.init(style: .whiteLarge)
+            ai.startAnimating()
+            ai.center = spinnerView.center
+            
+            DispatchQueue.main.async {
+                spinnerView.addSubview(ai)
+                onView.addSubview(spinnerView)
+            }
+            
+            vSpinner = spinnerView
+        }
+        
+        func removeSpinner() {
+            DispatchQueue.main.async {
+                vSpinner?.removeFromSuperview()
+                vSpinner = nil
+            }
+        }
 }

@@ -20,16 +20,13 @@ class ChangePassVC: UIViewController{
     
     @IBAction func changePass(_ sender: Any) {
         
-        let activityIndicator = UIActivityIndicatorView()
-        view.addSubview(activityIndicator)
-        activityIndicator.center = CGPoint(x: self.view.frame.size.width / 2, y: self.view.frame.size.height / 2)
-        activityIndicator.startAnimating()
+        self.showSpinner(onView: self.view)
         
         NetworkManager.shared.changePass(newPass: newPass.text!, completion: {
             success in
             
             if(!success){
-                activityIndicator.stopAnimating()
+                self.removeSpinner()
                 
                 var dialogMessage = UIAlertController(title: "Alert", message: "No se ha podido cambiar la contraseña", preferredStyle: .alert)
                 dialogMessage.isSpringLoaded = true
